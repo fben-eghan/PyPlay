@@ -71,3 +71,30 @@ rei1.calculate()
 print("\nScenario 2:")
 rei2.calculate()
 
+# Create a list of investment objects and loop through them to create graphs
+investments = [rei1, rei2]
+for i, investment in enumerate(investments):
+    # Create a list of years
+    years = [x for x in range(1, investment.investment_horizon + 2)]
+
+    # Create a list of annual cash flows
+    cash_flows = [-investment.equity_amount] + [investment.annual_cash_flow_after_tax] * investment.investment_horizon + [investment.terminal_value]
+
+    # Create a bar plot of annual cash flows
+    plt.subplot(2, 2, i + 1)
+    plt.bar(years, cash_flows)
+    plt.title(f"Scenario {i + 1}: Annual Cash Flows")
+    plt.xlabel("Year")
+    plt.ylabel("Cash Flow")
+
+    # Create a line plot of cumulative cash flows
+    cumulative_cash_flows = np.cumsum(cash_flows)
+    plt.subplot(2, 2, i + 3)
+    plt.plot(years, cumulative_cash_flows)
+    plt.title(f"Scenario {i + 1}: Cumulative Cash Flows")
+    plt.xlabel("Year")
+    plt.ylabel("Cumulative Cash Flow")
+
+# Adjust the layout and display the plots
+plt.tight_layout()
+plt.show()
