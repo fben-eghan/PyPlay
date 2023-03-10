@@ -1,47 +1,58 @@
-# Import the required libraries
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Define the key assumptions
-purchase_price = 1000000 # The purchase price of the property
-equity_ratio = 0.25 # The equity contribution as a percentage of the purchase price
-debt_ratio = 1 - equity_ratio # The debt contribution as a percentage of the purchase price
-interest_rate = 0.06 # The interest rate on the debt
-loan_term = 10 # The term of the loan in years
-amortization_period = 25 # The amortization period in years
-annual_growth_rate = 0.02 # The annual growth rate of the property value
-annual_rent_growth_rate = 0.02 # The annual growth rate of the rental income
-exit_cap_rate = 0.08 # The cap rate at which the property will be sold at the end of the investment horizon
-investment_horizon = 5 # The investment horizon in years
-equity_IRR_threshold = 0.15 # The minimum required equity IRR
-
-# Calculate the debt and equity amounts
-debt_amount = debt_ratio * purchase_price
-equity_amount = purchase_price - debt_amount
-
-# Calculate the debt service payments
-interest_payment = interest_rate * debt_amount
-principal_payment = np.pmt(interest_rate / 12, loan_term * 12, -debt_amount, 0)
-debt_service_payment = interest_payment + principal_payment
-
-# Calculate the annual cash flows
-annual_rent_income = 50000 # The annual rental income
-annual_expenses = 25000 # The annual expenses (e.g., property taxes, maintenance)
-annual_debt_service = debt_service_payment * 12 # The annual debt service payment
-annual_net_operating_income = annual_rent_income - annual_expenses
-annual_cash_flow_before_tax = annual_net_operating_income - annual_debt_service
-annual_cash_flow_after_tax = annual_cash_flow_before_tax * 0.8 # Assuming a 20% tax rate
-
-# Calculate the terminal value
-terminal_value = annual_cash_flow_before_tax * (1 + annual_rent_growth_rate) / (exit_cap_rate - annual_rent_growth_rate)
-
-# Calculate the equity IRR
-cash_flows = [-(equity_amount)] + [annual_cash_flow_after_tax] * investment_horizon + [terminal_value]
-equity_irr = np.irr(cash_flows)
-
-# Determine whether the investment meets the minimum equity IRR threshold
-if equity_irr >= equity_IRR_threshold:
-    print("The investment meets the minimum required equity IRR.")
-else:
-    print("The investment does not meet the minimum required equity IRR.")
+class RealEstateInvestment:
+    
+    def __init__(self, purchase_price, equity_ratio, interest_rate, loan_term, amortization_period,
+                 annual_growth_rate, annual_rent_growth_rate, exit_cap_rate, investment_horizon,
+                 equity_IRR_threshold, annual_rent_income, annual_expenses, tax_rate):
+        
+        self.purchase_price = purchase_price
+        self.equity_ratio = equity_ratio
+        self.interest_rate = interest_rate
+        self.loan_term = loan_term
+        self.amortization_period = amortization_period
+        self.annual_growth_rate = annual_growth_rate
+        self.annual_rent_growth_rate = annual_rent_growth_rate
+        self.exit_cap_rate = exit_cap_rate
+        self.investment_horizon = investment_horizon
+        self.equity_IRR_threshold = equity_IRR_threshold
+        self.annual_rent_income = annual_rent_income
+        self.annual_expenses = annual_expenses
+        self.tax_rate = tax_rate
+        
+    def calculate_debt_and_equity_amounts(self):
+        self.debt_amount = (1 - self.equity_ratio) * self.purchase_price
+        self.equity_amount = self.purchase_price - self.debt_amount
+    
+    def calculate_debt_service_payments(self):
+        interest_payment = self.interest_rate * self.debt_amount
+        principal_payment = np.pmt(self.interest_rate / 12, self.loan_term * 12, -self.debt_amount, 0)
+        self.debt_service_payment = interest_payment + principal_payment
+        
+    def calculate_annual_cash_flows(self):
+        annual_debt_service = self.debt_service_payment * 12
+        annual_net_operating_income = self.annual_rent_income - self.annual_expenses
+        annual_cash_flow_before_tax = annual_net_operating_income - annual_debt_service
+        self.annual_cash_flow_after_tax = annual_cash_flow_before_tax * (1 - self.tax_rate)
+    
+    def calculate_terminal_value(self):
+        self.terminal_value = self.annual_cash_flow_after_tax * (1 + self.annual_rent_growth_rate) / (self.exit_cap_rate - self.annual_rent_growth_rate)
+    
+    def calculate_equity_IRR(self):
+        cash_flows = [-(self.equity_amount)] + [self.annual_cash_flow_after_tax] * self.investment_horizon + [self.terminal_value]
+        self.equity_IRR = np.irr(cash_flows)
+    
+    def is_meeting_equity_IRR_threshold(self):
+        return self.equity_IRR >= self.equity_IRR_threshold
+    
+    def run_analysis(self, scenario_params):
+        scenario_results = []
+        for param_value in scenario_params:
+            setattr(self, param_value[0], param_value[1])
+            self.calculate_debt_and_equity_amounts()
+            self.calculate_debt_service_payments()
+            self.calculate_annual_cash_flows()
+            self.calculate_terminal_value()
+            self.calculate_equity_IRR()
+            scenario_results.append((param_value[0], param_value[1], self.equity_IRR
