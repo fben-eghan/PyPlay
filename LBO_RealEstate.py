@@ -1,45 +1,43 @@
-# Import the required libraries
-import numpy as np
+class LBO:
+    def __init__(self, purchase_price, down_payment, closing_costs, interest_rate, loan_term, rental_income, expenses):
+        self.purchase_price = purchase_price # Step 1: Initialize the input variables as instance attributes
+        self.down_payment = down_payment
+        self.closing_costs = closing_costs
+        self.interest_rate = interest_rate
+        self.loan_term = loan_term
+        self.rental_income = rental_income
+        self.expenses = expenses
 
-# Define the key assumptions
-property_value = 10000000 # The value of the commercial property
-loan_to_value_ratio = 0.7 # The loan amount as a percentage of the property value
-equity_ratio = 1 - loan_to_value_ratio # The equity as a percentage of the property value
-interest_rate = 0.05 # The interest rate on the loan
-amortization_period = 20 # The amortization period of the loan in years
-exit_cap_rate = 0.06 # The cap rate at the end of the investment horizon
-investment_horizon = 5 # The investment horizon in years
+    def loan_amount(self):
+        return self.purchase_price - self.down_payment # Step 2: Calculate the loan amount using input variables
 
-# Calculate the debt and equity amounts
-loan_amount = loan_to_value_ratio * property_value
-equity_amount = property_value - loan_amount
+    def monthly_mortgage_payment(self):
+        loan_amount = self.loan_amount() # Step 3: Call loan_amount method to get loan amount
+        monthly_rate = self.interest_rate / 12 # Step 4: Calculate monthly interest rate
+        num_payments = self.loan_term * 12 # Step 5: Calculate total number of mortgage payments
+        mortgage_payment = loan_amount * monthly_rate * (1 + monthly_rate) ** num_payments / ((1 + monthly_rate) ** num_payments - 1) # Step 6: Calculate monthly mortgage payment
+        return mortgage_payment
 
-# Calculate the debt service payments
-interest_payment = interest_rate * loan_amount
-principal_payment = np.pmt(interest_rate / 12, amortization_period * 12, -loan_amount, 0)
-debt_service_payment = interest_payment + principal_payment
+    def net_operating_income(self):
+        return self.rental_income - self.expenses # Step 7: Calculate net operating income
 
-# Calculate the annual net operating income
-annual_gross_rental_income = 500000 # The annual gross rental income
-annual_operating_expenses = 250000 # The annual operating expenses
-annual_net_operating_income = annual_gross_rental_income - annual_operating_expenses
+    def cash_flow_before_taxes(self):
+        mortgage_payment = self.monthly_mortgage_payment() # Step 8: Call monthly_mortgage_payment method to get monthly mortgage payment
+        NOI = self.net_operating_income() # Step 9: Call net_operating_income method to get net operating income
+        CFBT = NOI - mortgage_payment # Step 10: Calculate cash flow before taxes
+        return CFBT
 
-# Calculate the annual cash flows
-annual_debt_service = debt_service_payment # The annual debt service payment
-annual_cash_flow_before_tax = annual_net_operating_income - annual_debt_service
-annual_cash_flow_after_tax = annual_cash_flow_before_tax * 0.8 # Assuming a 20% tax rate
+    def cash_on_cash_return(self):
+        CFBT = self.cash_flow_before_taxes() # Step 11: Call cash_flow_before_taxes method to get cash flow before taxes
+        total_cash_invested = self.down_payment + self.closing_costs # Step 12: Calculate total cash invested
+        annual_CFBT = CFBT * 12 # Step 13: Calculate annual cash flow before taxes
+        CoC = annual_CFBT / total_cash_invested # Step 14: Calculate cash-on-cash return
+        return CoC
 
-# Calculate the terminal value
-terminal_value = annual_cash_flow_before_tax * (1 + exit_cap_rate)**investment_horizon / exit_cap_rate
-
-# Calculate the equity multiple
-total_cash_invested = equity_amount
-total_cash_proceeds = annual_cash_flow_after_tax * investment_horizon + terminal_value
-equity_multiple = total_cash_proceeds / total_cash_invested
-
-# Determine whether the investment meets the minimum required equity multiple
-minimum_equity_multiple = 1.5
-if equity_multiple >= minimum_equity_multiple:
-    print("The investment meets the minimum required equity multiple.")
-else:
-    print("The investment does not meet the minimum required equity multiple.")
+# Example usage
+property1 = LBO(1000000, 200000, 5000, 0.05, 10, 8000, 2000) # Step 15: Create an instance of LBO class with input variables
+print("Loan Amount: $", property1.loan_amount()) # Step 16: Call loan_amount method and print result
+print("Monthly Mortgage Payment: $", property1.monthly_mortgage_payment()) # Step 17: Call monthly_mortgage_payment method and print result
+print("Net Operating Income (NOI): $", property1.net_operating_income()) # Step 18: Call net_operating_income method and print result
+print("Cash Flow Before Taxes (CFBT): $", property1.cash_flow_before_taxes()) # Step 19: Call cash_flow_before_taxes method and print result
+print("Cash-on-Cash Return (CoC):", round(property1.cash_on_cash_return() * 100, 2), "%") # Step 20: Call cash_on_cash_return method, multiply by 100, round to 2 decimal places, and print result
