@@ -1,4 +1,4 @@
-class LBO_RE:
+class RealEstate:
     def __init__(self, purchase_price, down_payment, closing_costs, interest_rate, loan_term, rental_income, expenses):
         self.purchase_price = purchase_price # Step 1: Initialize the input variables as instance attributes
         self.down_payment = down_payment
@@ -35,7 +35,7 @@ class LBO_RE:
         return CoC
 
 # Example usage
-property1 = LBO_RE(1000000, 200000, 5000, 0.05, 10, 8000, 2000) # Step 15: Create an instance of LBO class with input variables
+property1 = RealEstate(1000000, 200000, 5000, 0.05, 10, 8000, 2000) # Step 15: Create an instance of LBO class with input variables
 print("Loan Amount: $", property1.loan_amount()) # Step 16: Call loan_amount method and print result
 print("Monthly Mortgage Payment: $", property1.monthly_mortgage_payment()) # Step 17: Call monthly_mortgage_payment method and print result
 print("Net Operating Income (NOI): $", property1.net_operating_income()) # Step 18: Call net_operating_income method and print result
