@@ -1,49 +1,24 @@
-# Import the required libraries
-import numpy as np
+class PrivateDebt:
+    def __init__(self, principal, interest_rate, loan_term, monthly_payment):
+        self.principal = principal # Step 1: Initialize the input variables as instance attributes
+        self.interest_rate = interest_rate
+        self.loan_term = loan_term
+        self.monthly_payment = monthly_payment
 
-# Define the key assumptions
-enterprise_value = 1000000 # The enterprise value of the target company
-senior_debt_ratio = 0.6 # The senior debt as a percentage of the enterprise value
-junior_debt_ratio = 0.2 # The junior debt as a percentage of the enterprise value
-equity_ratio = 1 - senior_debt_ratio - junior_debt_ratio # The equity as a percentage of the enterprise value
-senior_interest_rate = 0.05 # The interest rate on the senior debt
-senior_amortization_period = 5 # The amortization period of the senior debt in years
-junior_interest_rate = 0.10 # The interest rate on the junior debt
-junior_amortization_period = 10 # The amortization period of the junior debt in years
-exit_multiple = 5 # The exit multiple of the enterprise value at the end of the investment horizon
-investment_horizon = 5 # The investment horizon in years
-senior_debt_yield_threshold = 0.10 # The minimum required yield on the senior debt
+    def total_interest_paid(self):
+        monthly_rate = self.interest_rate / 12 # Step 2: Calculate monthly interest rate
+        num_payments = self.loan_term * 12 # Step 3: Calculate total number of loan payments
+        total_paid = self.monthly_payment * num_payments # Step 4: Calculate total amount paid over the loan term
+        total_interest = total_paid - self.principal # Step 5: Calculate total interest paid
+        return total_interest
 
-# Calculate the debt and equity amounts
-senior_debt_amount = senior_debt_ratio * enterprise_value
-junior_debt_amount = junior_debt_ratio * enterprise_value
-equity_amount = enterprise_value - senior_debt_amount - junior_debt_amount
+    def remaining_balance(self, n_months):
+        monthly_rate = self.interest_rate / 12 # Step 6: Calculate monthly interest rate
+        num_payments = self.loan_term * 12 # Step 7: Calculate total number of loan payments
+        remaining_principal = self.principal * ((1 + monthly_rate) ** num_payments - (1 + monthly_rate) ** n_months) / ((1 + monthly_rate) ** num_payments - 1) # Step 8: Calculate remaining principal after n_months
+        return remaining_principal
 
-# Calculate the senior debt service payments
-senior_interest_payment = senior_interest_rate * senior_debt_amount
-senior_principal_payment = np.pmt(senior_interest_rate / 12, senior_amortization_period * 12, -senior_debt_amount, 0)
-senior_debt_service_payment = senior_interest_payment + senior_principal_payment
-
-# Calculate the junior debt service payments
-junior_interest_payment = junior_interest_rate * junior_debt_amount
-junior_principal_payment = np.pmt(junior_interest_rate / 12, junior_amortization_period * 12, -junior_debt_amount, 0)
-junior_debt_service_payment = junior_interest_payment + junior_principal_payment
-
-# Calculate the annual cash flows
-annual_free_cash_flow_to_firm = 100000 # The annual free cash flow to the firm
-annual_debt_service = senior_debt_service_payment + junior_debt_service_payment # The annual debt service payment
-annual_cash_flow_before_tax = annual_free_cash_flow_to_firm - annual_debt_service
-annual_cash_flow_after_tax = annual_cash_flow_before_tax * 0.8 # Assuming a 20% tax rate
-
-# Calculate the terminal value
-terminal_value = (annual_cash_flow_before_tax * (1 + 0.03)**investment_horizon) * exit_multiple
-
-# Calculate the senior debt yield
-cash_flows = [-(senior_debt_amount)] + [senior_debt_service_payment] * senior_amortization_period + [junior_debt_service_payment] * junior_amortization_period * investment_horizon + [terminal_value]
-senior_debt_yield = np.irr(cash_flows)
-
-# Determine whether the investment meets the minimum required senior debt yield
-if senior_debt_yield >= senior_debt_yield_threshold:
-    print("The investment meets the minimum required senior debt yield.")
-else:
-    print("The investment does not meet the minimum required senior debt yield.")
+# Example usage
+loan1 = PrivateDebt(100000, 0.06, 5, 1933.21) # Step 9: Create an instance of PrivateDebt class with input variables
+print("Total Interest Paid: $", round(loan1.total_interest_paid(), 2)) # Step 10: Call total_interest_paid method, round to 2 decimal places, and print result
+print("Remaining Balance after 24 Months: $", round(loan1.remaining_balance(24), 2)) # Step 11: Call remaining_balance method with n_months = 24, round to 2 decimal places, and print result
