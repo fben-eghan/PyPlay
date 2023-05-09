@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Auction Game</title>
+</head>
+<body>
+	<h1>Auction Game</h1>
+	<h2>Auctioning a {{ item }}. Minimum bid is {{ min_bid }}.</h2>
+	<form method="POST">
+		<label for="player-name">Enter your name:</label>
+		<input id="player-name" name="player-name" type="text" placeholder="Enter your name" required>
+		<br>
+		<label for="bid-input">Enter your bid:</label>
+		<input id="bid-input" name="bid-input" type="number" placeholder="Enter your bid" required>
+		<br>
+		<input type="submit" value="Submit Bid">
+	</form>
+	<div id="output">
+	</div>
+</body>
+</html>
